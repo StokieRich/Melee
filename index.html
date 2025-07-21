@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +15,22 @@
   <title>Moonstone Melee Draw Simulator</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Uncial+Antiqua&display=swap" rel="stylesheet">
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Cinzel', serif;
       background: #111;
       color: #eee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 90%;
       padding: 1rem;
       text-align: center;
     }
@@ -70,6 +83,7 @@
   </style>
 </head>
 <body>
+<div class="container">
   <h1>Moonstone Melee Draw Simulator</h1>
   <div class="inputs">
     <label>Attacker Melee:</label>
@@ -98,6 +112,7 @@
     <div class="note">These probabilities show the chance that the attacker holds at least one copy of each card.</div>
     <div id="defenderProbs" class="probabilities"></div>
   </div>
+</div>
 
 <script>
 const deck = [
