@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BYBM86ZXL3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BYBM86ZXL3');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moonstone Melee Draw Simulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cinzel', serif;
+      background: #111;
+      color: #eee;
+      padding: 1rem;
+      text-align: center;
+    }
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .inputs label {
+      flex: 1 1 100%;
+    }
+    .inputs input {
+      width: 100%;
+      padding: 0.4rem;
+      font-size: 1rem;
+    }
+    button {
+      background: #5a412a;
+      color: #eee;
+      padding: 0.6rem 1rem;
+      border: none;
+      margin: 0.3rem;
+      border-radius: 5px;
+    }
+    .hand, .probabilities {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .card {
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      min-width: 80px;
+      background: #333;
+    }
+    .red { background-color: #7a1c1c; }
+    .blue { background-color: #1c3a7a; }
+    .purple { background-color: #5a1c7a; }
+    .back { background: repeating-linear-gradient(45deg, #222, #333 10px); color: transparent; }
+    .note {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Moonstone Melee Draw Simulator</h1>
+  <div class="inputs">
+    <label>Attacker Melee:</label>
+    <input type="number" id="attackerMelee" value="3" min="0" max="10">
+    <label>Defender Melee:</label>
+    <input type="number" id="defenderMelee" value="2" min="0" max="10">
+  </div>
+  <button onclick="startDraw('attacker')">I'm Attacking</button>
+  <button onclick="startDraw('defender')">I'm Defending</button>
+  <button onclick="resetAll()">Reset</button>
+
+  <div id="attacker" style="display:none">
+    <h2>Attacker View</h2>
+    <button onclick="goForIt('attacker')" id="goAttacker">Go For It (Attacker)</button>
+    <label><input type="checkbox" onchange="opponentGoes('defender', this)"> Opponent has gone for it</label>
+    <div id="attackerHand" class="hand"></div>
+    <div class="note">These probabilities show the chance that the defender holds at least one copy of each card.</div>
+    <div id="attackerProbs" class="probabilities"></div>
+  </div>
+
+  <div id="defender" style="display:none">
+    <h2>Defender View</h2>
+    <button onclick="goForIt('defender')" id="goDefender">Go For It (Defender)</button>
+    <label><input type="checkbox" onchange="opponentGoes('attacker', this)"> Opponent has gone for it</label>
+    <div id="defenderHand" class="hand"></div>
+    <div class="note">These probabilities show the chance that the attacker holds at least one copy of each card.</div>
+    <div id="defenderProbs" class="probabilities"></div>
+  </div>
+
+<script>
+const deck = [
+  "Thrust","Thrust","Thrust",
+  "Rising Attack","Rising Attack","Rising Attack",
+  "Falling Swing","Falling Swing","Falling Swing",
+  "Sweeping Cut","Sweeping Cut","Sweeping Cut",
+  "High Guard","High Guard","High Guard",
+  "Low Guard","Low Guard","Low Guard"
+];
+
+const typeOrder = {
+  "Thrust": 1,
+  "Rising Attack": 2,
+  "Falling Swing": 3,
+  "Sweeping Cut": 4,
+  "High Guard": 5,
+  "Low Guard": 6
+};
+
+const typeMap = {
+  "Thrust": "red",
+  "Rising Attack": "red",
+  "Falling Swing": "red",
+  "Sweeping Cut": "purple",
+  "High Guard": "blue",
+  "Low Guard": "blue"
+};
+
+let attackerHand = [], defenderHand = [], remainingDeck = [];
+let attackerGoUsed = false, defenderGoUsed = false;
+
+function shuffle(array) {
+  return array.slice().sort(() => Math.random() - 0.5);
+}
+
+function startDraw(role) {
+  const attackerCount = parseInt(document.getElementById("attackerMelee").value) + 2;
+  const defenderCount = parseInt(document.getElementById("defenderMelee").value);
+  let fullDeck = shuffle(deck);
+  attackerHand = fullDeck.splice(0, attackerCount);
+  defenderHand = fullDeck.splice(0, defenderCount);
+  remainingDeck = fullDeck;
+  attackerGoUsed = false;
+  defenderGoUsed = false;
+
+  document.getElementById("attacker").style.display = "none";
+  document.getElementById("defender").style.display = "none";
+
+  if (role === 'attacker') showView("attacker");
+  else showView("defender");
+}
+
+function resetAll() {
+  attackerHand = [];
+  defenderHand = [];
+  remainingDeck = [];
+  document.getElementById("attacker").style.display = "none";
+  document.getElementById("defender").style.display = "none";
+}
+
+function goForIt(player) {
+  if ((player === 'attacker' && attackerGoUsed) || (player === 'defender' && defenderGoUsed)) return;
+  const draw = remainingDeck.splice(0, 2);
+  if (player === 'attacker') {
+    attackerHand.push(...draw);
+    attackerGoUsed = true;
+    document.getElementById("goAttacker").style.display = "none";
+  } else {
+    defenderHand.push(...draw);
+    defenderGoUsed = true;
+    document.getElementById("goDefender").style.display = "none";
+  }
+  showView(player);
+}
+
+function opponentGoes(opponent, checkbox) {
+  if (checkbox.checked && remainingDeck.length >= 2) {
+    const draw = remainingDeck.splice(0, 2);
+    if (opponent === 'attacker') attackerHand.push(...draw);
+    else defenderHand.push(...draw);
+    showView(opponent === 'attacker' ? 'defender' : 'attacker');
+  }
+}
+
+function showView(role) {
+  const ownHand = role === 'attacker' ? attackerHand : defenderHand;
+  const opponentHand = role === 'attacker' ? defenderHand : attackerHand;
+
+  const handDiv = document.getElementById(role + "Hand");
+  const probDiv = document.getElementById(role + "Probs");
+  handDiv.innerHTML = "";
+  probDiv.innerHTML = "";
+
+  ownHand.sort((a, b) => typeOrder[a] - typeOrder[b]);
+  ownHand.forEach(card => {
+    const el = document.createElement("div");
+    el.className = "card " + typeMap[card];
+    el.textContent = card;
+    handDiv.appendChild(el);
+  });
+
+  for (let i = 0; i < opponentHand.length; i++) {
+    const back = document.createElement("div");
+    back.className = "card back";
+    back.textContent = "X";
+    handDiv.appendChild(back);
+  }
+
+  let visibleDeck = [...deck];
+  ownHand.forEach(card => {
+    const idx = visibleDeck.indexOf(card);
+    if (idx > -1) visibleDeck.splice(idx, 1);
+  });
+
+  const countMap = {};
+  visibleDeck.forEach(c => countMap[c] = (countMap[c] || 0) + 1);
+  const total = visibleDeck.length;
+  const unknownHandSize = opponentHand.length;
+
+  const sorted = Object.entries(countMap).map(([card, count]) => {
+    const prob = 1 - (comb(total - count, unknownHandSize) / comb(total, unknownHandSize));
+    return { card, prob };
+  }).sort((a, b) => a.prob - b.prob);
+
+  sorted.forEach(({card, prob}) => {
+    const line = document.createElement("div");
+    line.textContent = `${card}: ${(prob * 100).toFixed(1)}%`;
+    probDiv.appendChild(line);
+  });
+
+  document.getElementById(role).style.display = "block";
+}
+
+function comb(n, k) {
+  if (k > n || k < 0) return 0;
+  let res = 1;
+  for (let i = 1; i <= k; i++) res *= (n - i + 1) / i;
+  return res;
+}
+</script>
+</body>
+</html>
