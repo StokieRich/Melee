@@ -55,11 +55,33 @@
     button:hover {
       background: #6b543a;
     }
-    .result {
+    .hand, .probabilities {
       margin-top: 1rem;
-      font-weight: bold;
-      white-space: pre-line;
-      font-size: 0.95rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .card {
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      min-width: 80px;
+      background: #333;
+      text-align: center;
+    }
+    .red { background-color: #7a1c1c; }
+    .blue { background-color: #1c3a7a; }
+    .purple { background-color: #5a1c7a; }
+    .back {
+      background: repeating-linear-gradient(45deg, #222, #333 10px);
+      color: transparent;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 0.5rem;
+      text-align: center;
     }
   </style>
 </head>
@@ -79,7 +101,7 @@
   <div id="attacker" style="display:none">
     <h2>Attacker View</h2>
     <button onclick="goForIt('attacker')" id="goAttacker">Go For It (Attacker)</button>
-    <label><input type="checkbox" onchange="opponentGoes('defender', this)"> Opponent has gone for it</label>
+    <button onclick="opponentGoes('defender')" id="goOpponentDef">Opponent has gone for it</button>
     <div id="attackerHand" class="hand"></div>
     <div class="note">These probabilities show the chance that the defender holds at least one copy of each card.</div>
     <div id="attackerProbs" class="probabilities"></div>
@@ -88,7 +110,7 @@
   <div id="defender" style="display:none">
     <h2>Defender View</h2>
     <button onclick="goForIt('defender')" id="goDefender">Go For It (Defender)</button>
-    <label><input type="checkbox" onchange="opponentGoes('attacker', this)"> Opponent has gone for it</label>
+    <button onclick="opponentGoes('attacker')" id="goOpponentAtt">Opponent has gone for it</button>
     <div id="defenderHand" class="hand"></div>
     <div class="note">These probabilities show the chance that the attacker holds at least one copy of each card.</div>
     <div id="defenderProbs" class="probabilities"></div>
@@ -170,8 +192,8 @@ function goForIt(player) {
   showView(player);
 }
 
-function opponentGoes(opponent, checkbox) {
-  if (checkbox.checked && remainingDeck.length >= 2) {
+function opponentGoes(opponent) {
+  if (remainingDeck.length >= 2) {
     const draw = remainingDeck.splice(0, 2);
     if (opponent === 'attacker') attackerHand.push(...draw);
     else defenderHand.push(...draw);
