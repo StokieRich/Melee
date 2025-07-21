@@ -16,69 +16,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Uncial+Antiqua&display=swap" rel="stylesheet">
   <style>
     html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    body {
+      height: 100%; margin: 0; padding: 0;
       font-family: 'Cinzel', serif;
-      background: #111;
-      color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #0e0e0e;
+      color: #f4eee1;
+      padding: 1rem;
+      display: flex; flex-direction: column;
     }
     .container {
-      max-width: 600px;
-      width: 90%;
+      flex-grow: 1;
+      max-width: 480px;
+      margin: auto;
+      background: rgba(20, 20, 20, 0.85);
+      border-radius: 12px;
       padding: 1rem;
+      box-shadow: 0 0 12px #000;
+    }
+    h1 {
+      font-family: 'Uncial Antiqua', serif;
       text-align: center;
+      color: #dcd2c5;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
     }
-    .inputs {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .inputs label {
-      flex: 1 1 100%;
-    }
-    .inputs input {
+    label, select, input, button {
       width: 100%;
-      padding: 0.4rem;
       font-size: 1rem;
+      margin: 0.6rem 0;
     }
     button {
       background: #5a412a;
       color: #eee;
-      padding: 0.6rem 1rem;
+      padding: 0.8rem;
       border: none;
-      margin: 0.3rem;
-      border-radius: 5px;
-    }
-    .hand, .probabilities {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    .card {
-      padding: 0.6rem;
       border-radius: 6px;
-      font-size: 0.9rem;
-      min-width: 80px;
-      background: #333;
+      box-shadow: 0 2px 6px #000;
     }
-    .red { background-color: #7a1c1c; }
-    .blue { background-color: #1c3a7a; }
-    .purple { background-color: #5a1c7a; }
-    .back { background: repeating-linear-gradient(45deg, #222, #333 10px); color: transparent; }
-    .note {
-      font-size: 0.85rem;
-      color: #aaa;
-      margin-top: 0.5rem;
+    button:hover {
+      background: #6b543a;
+    }
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+      white-space: pre-line;
+      font-size: 0.95rem;
     }
   </style>
 </head>
